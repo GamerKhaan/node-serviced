@@ -78,7 +78,14 @@ func (s *server) handleUpdate(w http.ResponseWriter, r *http.Request) {
 	if !s.authenticate(w, r) {
 		return
 	}
-	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Minute)
+	// Deliberately not derived from r.Context(): the panel's HTTP client uses a
+	// short request timeout and will disconnect long before an update finishes
+	// (self-update -> docker pull -> container recreate can take minutes). If
+	// this context were tied to the request, that disconnect would cancel it
+	// and SIGKILL the in-progress update, potentially leaving the node with no
+	// container at all. Let the update run to completion regardless of whether
+	// the caller is still listening for the response.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	if stderr, code, err := runCommand(ctx, s.cfg.AppName, "update", "--no-update-service"); err != nil {
@@ -110,7 +117,8 @@ func (s *server) handleCoreUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Minute)
+	// Not derived from r.Context(); see handleUpdate for why.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	args := []string{"core-update", "--version", payload.CoreVersion}
@@ -156,7 +164,8 @@ func (s *server) handleGeofiles(w http.ResponseWriter, r *http.Request) {
 
 	flag := "--" + region
 
-	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Minute)
+	// Not derived from r.Context(); see handleUpdate for why.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	if stderr, code, err := runCommand(ctx, s.cfg.AppName, "geofiles", flag); err != nil {
@@ -178,7 +187,8 @@ func (s *server) handleHardReset(w http.ResponseWriter, r *http.Request) {
 
 	logf("hard reset requested: restarting node %s", s.cfg.AppName)
 
-	ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
+	// Not derived from r.Context(); see handleUpdate for why.
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	if stderr, code, err := runCommand(ctx, s.cfg.AppName, "restart"); err != nil {
