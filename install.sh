@@ -4,7 +4,7 @@ set -euo pipefail
 # pg-node installer (Linux only)
 # Downloads the latest GitHub release for the detected arch and installs to /usr/local/bin/<name>
 
-REPO_OWNER="PasarGuard"
+REPO_OWNER="GamerKhaan"
 REPO_NAME="node-serviced"
 APP_NAME="pg-node"
 INSTALL_PATH="/usr/local/bin/${APP_NAME}"
@@ -66,7 +66,7 @@ require_linux() {
   if [[ "$(uname -s)" != "Linux" ]]; then
     log "This installer supports Linux only."
     exit 1
-  }
+  fi
 }
 
 require_tools() {
