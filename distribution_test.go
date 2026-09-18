@@ -23,4 +23,14 @@ func TestForkDistribution(t *testing.T) {
 	if strings.Contains(s, `REPO_OWNER="PasarGuard"`) {
 		t.Fatal("installer still references upstream release owner")
 	}
+
+	releaseConfig, err := os.ReadFile(".goreleaser.yml")
+	if err != nil { t.Fatal(err) }
+	r := string(releaseConfig)
+	if !strings.Contains(r, "owner: GamerKhaan") {
+		t.Fatal("GoReleaser does not publish to GamerKhaan")
+	}
+	if strings.Contains(r, "owner: PasarGuard") || strings.Contains(r, "github.com/PasarGuard/node-serviced") {
+		t.Fatal("GoReleaser still publishes or links to upstream")
+	}
 }

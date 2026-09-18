@@ -82,7 +82,7 @@ changelog:
 
 release:
   github:
-    owner: PasarGuard
+    owner: GamerKhaan
     name: node-serviced
   draft: false
   prerelease: auto
@@ -90,7 +90,7 @@ release:
   header: |
     ## node-serviced Release {{ .Tag }}
   footer: |
-    **Full Changelog**: https://github.com/PasarGuard/node-serviced/compare/{{ .PreviousTag }}...{{ .Tag }}
+    **Full Changelog**: https://github.com/GamerKhaan/node-serviced/compare/{{ .PreviousTag }}...{{ .Tag }}
 
     ---
 
